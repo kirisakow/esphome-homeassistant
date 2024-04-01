@@ -1,6 +1,6 @@
 substitutions:
   name: bmssolar
-  max_cycles: '6000.0'
+  max_cycles: "6000.0"
   tx_pin: GPIO1
   rx_pin: GPIO3
 esphome:
@@ -15,11 +15,11 @@ logger:
 globals:
   - id: can_420_rx
     type: int
-    restore_value: 'no'
-    initial_value: '0'
+    restore_value: "no"
+    initial_value: "0"
   - id: charge_status
-    type: 'std::string'
-    restore_value: 'no'
+    type: "std::string"
+    restore_value: "no"
     initial_value: '"Startup"'
 button:
   - platform: restart
@@ -41,8 +41,8 @@ uart:
   id: uart_0
   baud_rate: 9600
   rx_buffer_size: 384
-  tx_pin: '${tx_pin}'
-  rx_pin: '${rx_pin}'
+  tx_pin: "${tx_pin}"
+  rx_pin: "${rx_pin}"
 modbus:
   id: modbus0
   uart_id: uart_0
@@ -82,7 +82,7 @@ sensor:
     address: 37007
     register_type: holding
     value_type: S_WORD
-    unit_of_measurement: '%'
+    unit_of_measurement: "%"
     device_class: energy
     state_class: measurement
     accuracy_decimals: 0
@@ -94,7 +94,7 @@ sensor:
     address: 35174
     register_type: holding
     value_type: S_WORD
-    unit_of_measurement: '%'
+    unit_of_measurement: "%"
     device_class: energy
     state_class: measurement
     accuracy_decimals: 0
