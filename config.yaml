@@ -1,0 +1,102 @@
+substitutions:
+  name: bmssolar
+  max_cycles: '6000.0'
+  tx_pin: GPIO1
+  rx_pin: GPIO3
+esphome:
+  name: bmssolar
+  friendly_name: bmssolar
+esp32:
+  board: esp32dev
+  framework:
+    type: arduino
+logger:
+  baud_rate: 0
+globals:
+  - id: can_420_rx
+    type: int
+    restore_value: 'no'
+    initial_value: '0'
+  - id: charge_status
+    type: 'std::string'
+    restore_value: 'no'
+    initial_value: '"Startup"'
+button:
+  - platform: restart
+    name: Restart button
+    id: restart_button
+    internal: true
+wifi:
+  ssid: null
+  password: null
+  ap:
+    ssid: BmsSolar Fallback Hotspot
+    password: null
+api:
+  encryption:
+    key: null
+ota:
+  password: null
+uart:
+  id: uart_0
+  baud_rate: 9600
+  rx_buffer_size: 384
+  tx_pin: '${tx_pin}'
+  rx_pin: '${rx_pin}'
+modbus:
+  id: modbus0
+  uart_id: uart_0
+  send_wait_time: 900ms
+modbus_controller:
+  id: bms0
+  address: 247
+  modbus_id: modbus0
+  command_throttle: 900ms
+  update_interval: 3s
+output:
+  - platform: gpio
+    pin: 2
+    id: led
+    inverted: false
+switch:
+  - platform: gpio
+    pin: GPIO4
+    name: Test
+    id: Test
+sensor:
+  - platform: modbus_controller
+    modbus_controller_id: bms0
+    name: Leistung
+    address: 35140
+    register_type: holding
+    value_type: S_WORD
+    unit_of_measurement: W
+    device_class: energy
+    state_class: measurement
+    accuracy_decimals: 0
+    filters:
+      - multiply: 1
+  - platform: modbus_controller
+    modbus_controller_id: bms0
+    name: SOC
+    address: 37007
+    register_type: holding
+    value_type: S_WORD
+    unit_of_measurement: '%'
+    device_class: energy
+    state_class: measurement
+    accuracy_decimals: 0
+    filters:
+      - multiply: 1
+  - platform: modbus_controller
+    modbus_controller_id: bms0
+    name: Temperatur
+    address: 35174
+    register_type: holding
+    value_type: S_WORD
+    unit_of_measurement: '%'
+    device_class: energy
+    state_class: measurement
+    accuracy_decimals: 0
+    filters:
+      - multiply: 1
