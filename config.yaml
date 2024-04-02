@@ -117,11 +117,16 @@ template:
           float power = id(power_sensor).state;
           float current = id(charging_current);
           if (power > numerical_value_1) {
-            current += 0.2;
+            if (current < 25) {
+              current += 0.2;
+            }
           } else if (power < numerical_value_1) {
-            current -= 0.2;
+            if (current > 1) {
+              current -= 0.2;
+            }
           }
-          ESP_LOGD("charging_current", "Current charging current: %.1f", current);
+          id(charging_current) = current;
+          ESP_LOGD("charging_current", "Calculated charging current: %.1f", current);
           return current;
 automation:
   - id: charge_control
@@ -133,7 +138,6 @@ automation:
       - lambda: |-
           float soc = id(soc_sensor).state;
           float power = id(power_sensor).state;
-          float current = id(charging_current);
           if (soc > numerical_value_2 && power > numerical_value_3) {
             // Set GPIO high
             digitalWrite(GPIO_PIN, HIGH);
