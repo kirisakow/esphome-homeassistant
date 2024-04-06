@@ -3,6 +3,10 @@ substitutions:
   max_cycles: "6000.0"
   tx_pin: GPIO1
   rx_pin: GPIO3
+  feed_in_power_threshold: !lambda '4000 * 0.975'
+  battery_soc_threshold: !lambda '4000 * 0.8'
+  high_power_threshold: !lambda '4000 * 0.9875'
+  low_power_threshold: !lambda '4000 * 0.875'
 esphome:
   name: bmssolar
   friendly_name: bmssolar
@@ -24,8 +28,7 @@ globals:
   - id: charging_current
     type: float
     restore_value: "no"
-    initial_value: "25"  # Initial charging current value
-    # You can adjust the initial value as needed
+    initial_value: "25"
 button:
   - platform: restart
     name: Restart button
@@ -57,7 +60,7 @@ modbus_controller:
   address: 247
   modbus_id: modbus0
   command_throttle: 900ms
-  update_interval: 30s  # Increase update interval to 30 seconds
+  update_interval: 30s
 output:
   - platform: gpio
     pin: 2
@@ -101,7 +104,7 @@ sensor:
     address: 35174
     register_type: holding
     value_type: S_WORD
-    unit_of_measurement: "°C"  # Corrected unit
+    unit_of_measurement: "°C"
     device_class: temperature
     state_class: measurement
     accuracy_decimals: 0
@@ -116,11 +119,11 @@ template:
         lambda: |-
           float power = id(power_sensor).state;
           float current = id(charging_current);
-          if (power > numerical_value_1) {
+          if (power > feed_in_power_threshold) {
             if (current < 25) {
               current += 0.2;
             }
-          } else if (power < numerical_value_1) {
+          } else if (power < feed_in_power_threshold) {
             if (current > 1) {
               current -= 0.2;
             }
@@ -138,24 +141,17 @@ automation:
       - lambda: |-
           float soc = id(soc_sensor).state;
           float power = id(power_sensor).state;
-          if (soc > numerical_value_2 && power > numerical_value_3) {
-            // Set GPIO high
+          if (soc > battery_soc_threshold && power > high_power_threshold) {
             digitalWrite(GPIO_PIN, HIGH);
             id(led).turn_on();
-            // Delay turning off for 10 minutes
             delay(600000);  // 10 minutes in milliseconds
-            // Check if conditions still met after 10 minutes
             float new_power = id(power_sensor).state;
-            if (new_power < numerical_value_4) {
-              // Turn off GPIO after 10 minutes
+            if (new_power < low_power_threshold) {
               digitalWrite(GPIO_PIN, LOW);
               id(led).turn_off();
-              // Delay turning on for 5 minutes
               delay(300000);  // 5 minutes in milliseconds
             }
           } else {
-            // Reset timer if conditions not met
-            // This will ensure the GPIO remains off
             digitalWrite(GPIO_PIN, LOW);
             id(led).turn_off();
           }
