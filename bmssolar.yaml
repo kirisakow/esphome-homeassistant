@@ -7,6 +7,9 @@ substitutions:
   battery_soc_threshold: !lambda '4000 * 0.8'
   high_power_threshold: !lambda '4000 * 0.9875'
   low_power_threshold: !lambda '4000 * 0.875'
+  delta_charging_current: 0.2
+  max_charging_current: 25
+  min_charging_current: 1
 esphome:
   name: bmssolar
   friendly_name: bmssolar
@@ -120,12 +123,12 @@ template:
           float power = id(power_sensor).state;
           float current = id(charging_current);
           if (power > feed_in_power_threshold) {
-            if (current < 25) {
-              current += 0.2;
+            if (current < max_charging_current) {
+              current += delta_charging_current;
             }
           } else if (power < feed_in_power_threshold) {
-            if (current > 1) {
-              current -= 0.2;
+            if (current > min_charging_current) {
+              current -= delta_charging_current;
             }
           }
           id(charging_current) = current;
