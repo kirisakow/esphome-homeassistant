@@ -84,7 +84,7 @@ modbus_controller:
   address: 247
   modbus_id: modbus0
   command_throttle: 900ms
-  update_interval: 30s
+  update_interval: 3s
 output:
   - platform: gpio
     pin: 2
