@@ -3,14 +3,7 @@ substitutions:
   max_cycles: "6000.0"
   tx_pin: GPIO1
   rx_pin: GPIO3
-  feed_in_power_threshold: !lambda '4000 * 0.975'
-  battery_soc_threshold: !lambda '4000 * 0.8'
-  high_power_threshold: !lambda '4000 * 0.9875'
-  low_power_threshold: !lambda '4000 * 0.875'
-  delta_charging_current: 0.2
-  max_charging_current: 25
-  min_charging_current: 1
-esphome:
+  esphome:
   name: bmssolar
   friendly_name: bmssolar
 esp32:
@@ -22,16 +15,44 @@ logger:
 globals:
   - id: can_420_rx
     type: int
-    restore_value: "no"
-    initial_value: "0"
+    restore_value: 'no'
+    initial_value: '0'
   - id: charge_status
-    type: "std::string"
-    restore_value: "no"
-    initial_value: '"Startup"'
-  - id: charging_current
+    type: 'std::string'
+    restore_value: 'no'
+    initial_value: 'Startup'
+  - id: battery_charge_current
     type: float
-    restore_value: "no"
-    initial_value: "25"
+    restore_value: 'no'
+    initial_value: '1.0'
+  - id: feed_in_power_threshold
+    type: float
+    restore_value: 'no'
+    initial_value: '3900.0' # 4000W * 0.975
+  - id: battery_soc_threshold
+    type: float
+    restore_value: 'no'
+    initial_value: '80.0'
+  - id: high_power_threshold
+    type: float
+    restore_value: 'no'
+    initial_value: '3950.0' # 4000W * 0.9875
+  - id: low_power_threshold
+    type: float
+    restore_value: 'no'
+    initial_value: '3500.0' # 4000W * 0.875
+  - id: delta_charging_current
+    type: float
+    restore_value: 'no'
+    initial_value: '0.2'
+  - id: max_charging_current
+    type: int
+    restore_value: 'no'
+    initial_value: '25'
+  - id: min_charging_current
+    type: int
+    restore_value: 'no'
+    initial_value: '1'
 button:
   - platform: restart
     name: Restart button
