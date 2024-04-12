@@ -134,60 +134,21 @@ sensor:
     accuracy_decimals: 0
     filters:
       - multiply: 1
-  - platform: modbus_controller
-    modbus_controller_id: bms0
-    name: Temperatur
-    address: 35174
-    register_type: holding
-    value_type: S_WORD
-    unit_of_measurement: "°C"
-    device_class: temperature
-    state_class: measurement
-    accuracy_decimals: 0
-    filters:
-      - multiply: 1
-template:
-  - sensor:
-      - name: "Charging Current"
-        id: charging_current_sensor
-        unit_of_measurement: "A"
-        accuracy_decimals: 1
-        lambda: |-
-          float power = id(power_sensor).state;
-          float current = id(charging_current);
-          if (power > feed_in_power_threshold) {
-            if (current < max_charging_current) {
-              current += delta_charging_current;
+    on_value:
+      then:
+        - lambda: |-
+            if (id(soc_sensor).state > id(battery_soc_threshold)) {
+              if (id(power_sensor).state > id(high_power_threshold)) {
+                digitalWrite(GPIO_PIN, HIGH);
+                id(led).turn_on();
+                delay(600000);  // 10 minutes in milliseconds
+                if (id(power_sensor).state < id(low_power_threshold)) {
+                  digitalWrite(GPIO_PIN, LOW);
+                  id(led).turn_off();
+                  delay(300000);  // 5 minutes in milliseconds
+                }
+              } else {
+                digitalWrite(GPIO_PIN, LOW);
+                id(led).turn_off();
+              }
             }
-          } else if (power < feed_in_power_threshold) {
-            if (current > min_charging_current) {
-              current -= delta_charging_current;
-            }
-          }
-          id(charging_current) = current;
-          ESP_LOGD("charging_current", "Calculated charging current: %.1f", current);
-          return current;
-automation:
-  - id: charge_control
-    alias: "Charge Control"
-    trigger:
-      - platform: time
-        interval: 30s
-    action:
-      - lambda: |-
-          float soc = id(soc_sensor).state;
-          float power = id(power_sensor).state;
-          if (soc > battery_soc_threshold && power > high_power_threshold) {
-            digitalWrite(GPIO_PIN, HIGH);
-            id(led).turn_on();
-            delay(600000);  // 10 minutes in milliseconds
-            float new_power = id(power_sensor).state;
-            if (new_power < low_power_threshold) {
-              digitalWrite(GPIO_PIN, LOW);
-              id(led).turn_off();
-              delay(300000);  // 5 minutes in milliseconds
-            }
-          } else {
-            digitalWrite(GPIO_PIN, LOW);
-            id(led).turn_off();
-          }
