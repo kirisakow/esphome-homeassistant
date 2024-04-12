@@ -3,7 +3,7 @@ substitutions:
   max_cycles: "6000.0"
   tx_pin: GPIO1
   rx_pin: GPIO3
-  esphome:
+esphome:
   name: bmssolar
   friendly_name: bmssolar
 esp32:
