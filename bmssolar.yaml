@@ -109,6 +109,18 @@ sensor:
     accuracy_decimals: 0
     filters:
       - multiply: 1
+    on_value:
+      then:
+        - lambda: |-
+            if (id(power_sensor).state > id(feed_in_power_threshold)) {
+              if (id(battery_charge_current) < id(max_charging_current)) {
+                id(battery_charge_current) += id(delta_charging_current);
+              }
+            } else if (id(power_sensor).state < id(feed_in_power_threshold)) {
+              if (id(battery_charge_current) > id(min_charging_current)) {
+                id(battery_charge_current) -= id(delta_charging_current);
+              }
+            }
   - platform: modbus_controller
     modbus_controller_id: bms0
     id: soc_sensor
