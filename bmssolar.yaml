@@ -90,11 +90,11 @@ output:
     pin: 2
     id: led
     inverted: false
-switch:
-  - platform: gpio
-    pin: GPIO4
-    name: Test
-    id: Test
+# switch:
+#   - platform: gpio
+#     pin: GPIO4
+#     name: Test
+#     id: Test
 sensor:
   - platform: modbus_controller
     modbus_controller_id: bms0
