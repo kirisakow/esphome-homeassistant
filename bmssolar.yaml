@@ -20,7 +20,7 @@ globals:
   - id: charge_status
     type: 'std::string'
     restore_value: 'no'
-    initial_value: 'Startup'
+    initial_value: '"Startup"'
   - id: battery_charge_current
     type: float
     restore_value: 'no'
