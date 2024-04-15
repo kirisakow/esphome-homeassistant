@@ -85,16 +85,11 @@ modbus_controller:
   modbus_id: modbus0
   command_throttle: 900ms
   update_interval: 3s
-output:
+switch:
   - platform: gpio
-    pin: 2
-    id: led
-    inverted: false
-# switch:
-#   - platform: gpio
-#     pin: GPIO4
-#     name: Test
-#     id: Test
+    id: relais
+    pin: 13
+    name: 'Ausgang'
 sensor:
   - platform: modbus_controller
     modbus_controller_id: bms0
@@ -140,16 +135,16 @@ sensor:
         - lambda: |-
             if (id(soc_sensor).state > id(battery_soc_threshold)) {
               if (id(power_sensor).state > id(high_power_threshold)) {
-                digitalWrite(GPIO_PIN, HIGH);
-                id(led).turn_on();
+                digitalWrite(13, HIGH);
+                id(relais).turn_on();
                 delay(600000);  // 10 minutes in milliseconds
                 if (id(power_sensor).state < id(low_power_threshold)) {
-                  digitalWrite(GPIO_PIN, LOW);
-                  id(led).turn_off();
+                  digitalWrite(13, LOW);
+                  id(relais).turn_off();
                   delay(300000);  // 5 minutes in milliseconds
                 }
               } else {
-                digitalWrite(GPIO_PIN, LOW);
-                id(led).turn_off();
+                digitalWrite(13, LOW);
+                id(relais).turn_off();
               }
             }
