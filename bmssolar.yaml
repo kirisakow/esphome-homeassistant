@@ -132,19 +132,30 @@ sensor:
       - multiply: 1
     on_value:
       then:
-        - lambda: |-
-            if (id(soc_sensor).state > id(battery_soc_threshold)) {
-              if (id(power_sensor).state > id(high_power_threshold)) {
-                digitalWrite(13, HIGH);
-                id(relais).turn_on();
-                delay(600000);  // 10 minutes in milliseconds
-                if (id(power_sensor).state < id(low_power_threshold)) {
-                  digitalWrite(13, LOW);
-                  id(relais).turn_off();
-                  delay(300000);  // 5 minutes in milliseconds
-                }
-              } else {
-                digitalWrite(13, LOW);
-                id(relais).turn_off();
-              }
-            }
+        - if:
+            condition:
+              lambda: |-
+                return id(soc_sensor).state > id(battery_soc_threshold);
+            then:
+              - if:
+                  condition:
+                    lambda: |-
+                      return id(power_sensor).state > id(high_power_threshold);
+                  then:
+                    - digitalWrite: 2
+                      value: HIGH
+                    - switch.turn_on: relais
+                    - delay: 600s
+                    - if:
+                        condition:
+                          lambda: |-
+                            return id(power_sensor).state < id(low_power_threshold);
+                        then:
+                          - digitalWrite: 2
+                            value: LOW
+                          - switch.turn_off: relais
+                          - delay: 300s
+                  else:
+                    - digitalWrite: 2
+                      value: LOW
+                    - switch.turn_off: relais
