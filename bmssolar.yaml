@@ -142,8 +142,8 @@ sensor:
                     lambda: |-
                       return id(power_sensor).state > id(high_power_threshold);
                   then:
-                    - digitalWrite: 2
-                      value: HIGH
+                    - lambda: |-
+                        digitalWrite(2, HIGH);
                     - switch.turn_on: relais
                     - delay: 600s
                     - if:
@@ -151,11 +151,11 @@ sensor:
                           lambda: |-
                             return id(power_sensor).state < id(low_power_threshold);
                         then:
-                          - digitalWrite: 2
-                            value: LOW
+                          - lambda: |-
+                              digitalWrite(2, LOW);
                           - switch.turn_off: relais
                           - delay: 300s
                   else:
-                    - digitalWrite: 2
-                      value: LOW
+                    - lambda: |-
+                        digitalWrite(2, LOW);
                     - switch.turn_off: relais
