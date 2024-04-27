@@ -151,5 +151,3 @@ sensor:
                         then:
                           - switch.turn_off: relais
                           - delay: 300s
-                  else:
-                    - switch.turn_off: relais
