@@ -32,15 +32,15 @@ globals:
   - id: battery_soc_threshold
     type: float
     restore_value: 'no'
-    initial_value: '80.0'
+    initial_value: '60.0'
   - id: high_power_threshold
     type: float
     restore_value: 'no'
-    initial_value: '3950.0' # 4000W * 0.9875
+    initial_value: '3800.0'
   - id: low_power_threshold
     type: float
     restore_value: 'no'
-    initial_value: '3500.0' # 4000W * 0.875
+    initial_value: '3000.0'
   - id: delta_charging_current
     type: float
     restore_value: 'no'
@@ -143,7 +143,7 @@ sensor:
                       return id(power_sensor).state > id(high_power_threshold);
                   then:
                     - switch.turn_on: relais
-                    - delay: 600s
+                    - delay: 40s
                     - while:
                         condition:
                           not:
@@ -152,4 +152,4 @@ sensor:
                         then:
                           - delay: 1s
                     - switch.turn_off: relais
-                    - delay: 300s
+                    - delay: 200s
