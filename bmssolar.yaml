@@ -139,8 +139,10 @@ sensor:
             then:
               - if:
                   condition:
-                    lambda: |-
-                      return id(power_sensor).state > id(high_power_threshold);
+                    and:
+                      - lambda: |-
+                          return id(power_sensor).state > id(high_power_threshold);
+                      - switch.is_off: relais
                   then:
                     - switch.turn_on: relais
                     - delay: 40s
@@ -151,5 +153,9 @@ sensor:
                               return id(power_sensor).state < id(low_power_threshold);
                         then:
                           - delay: 1s
-                    - switch.turn_off: relais
-                    - delay: 200s
+                    - if:
+                        condition:
+                          switch.is_on: relais
+                        then:
+                          - switch.turn_off: relais
+                          - delay: 200s
