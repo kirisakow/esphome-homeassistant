@@ -146,8 +146,9 @@ sensor:
                     - delay: 600s
                     - while:
                         condition:
-                          lambda: |-
-                            return id(power_sensor).state >= id(low_power_threshold);
+                          not:
+                            lambda: |-
+                              return id(power_sensor).state < id(low_power_threshold);
                         then:
                           - delay: 1s
                     - switch.turn_off: relais
