@@ -146,9 +146,12 @@ sensor:
                       - lambda: |-
                           return id(power_sensor).state > id(high_power_threshold);
                       - switch.is_off: relais
+                      - not:
+                          script.is_running: minimum_delay_with_relais_off
                   then:
                     - switch.turn_on: relais
-                    - delay: 40s
+                    - script.execute: minimum_delay_with_relais_on
+                    - script.wait: minimum_delay_with_relais_on
                     - while:
                         condition:
                           not:
@@ -158,7 +161,18 @@ sensor:
                           - delay: 1s
                     - if:
                         condition:
-                          switch.is_on: relais
+                          and:
+                            - switch.is_on: relais
+                            - not:
+                                script.is_running: minimum_delay_with_relais_on
                         then:
                           - switch.turn_off: relais
-                          - delay: 200s
+                          - script.execute: minimum_delay_with_relais_off
+                          - script.wait: minimum_delay_with_relais_off
+script:
+  - id: minimum_delay_with_relais_on
+    then:
+      - delay: 40s
+  - id: minimum_delay_with_relais_off
+    then:
+      - delay: 200s
